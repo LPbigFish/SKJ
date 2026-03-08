@@ -6,10 +6,24 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { config, self', inputs', pkgs, system, ... }:
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+        "x86_64-darwin"
+      ];
+      perSystem =
+        {
+          config,
+          self',
+          inputs',
+          pkgs,
+          system,
+          ...
+        }:
         let
           python3 = pkgs.python3.override {
             self = python3;
@@ -18,18 +32,23 @@
               # mathgenerator = pyfinal.callPackage ./mathgenerator.nix { };
             };
           };
-          python = python3.withPackages(p: with p; [
-            ipykernel
-            pip
-            notebook
-            ipywidgets
-            matplotlib-inline
-            pytest
-          ]);
-        in {
-        devShells.default = pkgs.mkShell {
-          buildInputs = [ python ]; 
+          python = python3.withPackages (
+            p: with p; [
+              ipykernel
+              pandas
+              pip
+              notebook
+              ipywidgets
+              matplotlib-inline
+              pytest
+              tkinter
+            ]
+          );
+        in
+        {
+          devShells.default = pkgs.mkShell {
+            buildInputs = [ python ];
+          };
         };
-      };
     };
 }
